@@ -2,10 +2,10 @@ FROM base-image:1.0
 
 RUN apt-get update && apt-get install -y curl 
 
-ENV HADOOP_VERSION=3.3.4
+ENV HADOOP_VERSION=3.3.0
 ENV HADOOP_URL=https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
 
-# Hadoop 3.3.4
+# Hadoop 3.3.0
 RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
     && tar -xvf /tmp/hadoop.tar.gz -C /opt/ \
     && rm /tmp/hadoop.tar.gz
@@ -21,5 +21,6 @@ ADD yarn-site.xml /etc/hadoop/
 
 ENV HADOOP_HOME /opt/hadoop
 ENV HADOOP_CONF_DIR /etc/hadoop
-ENV PATH $HADOOP_HOME/bin/:$PATH
+
+ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 ENV YARN_CONF_DIR=$HADOOP_CONF_DIR
