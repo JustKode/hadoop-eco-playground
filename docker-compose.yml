@@ -1,0 +1,74 @@
+version: "3.4"
+
+# 이미지와 네트워크 정보에 대한 base service를 지정
+x-datanode_base: &datanode_base
+  image: hadoop-datanode:3.3.0
+  networks:
+    - bridge
+  depends_on:
+    - namenode
+
+services:
+  namenode:
+    image: hadoop-namenode:3.3.0
+    container_name: namenode
+    hostname: namenode
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - namenode:/opt/hadoop/dfs/name
+      - namenode:/opt/hadoop/yarn/timeline
+      - /tmp:/tmp
+    networks:
+      - bridge
+
+  resource-manager:
+    image: hadoop-resource-manager:3.3.0
+    container_name: resource-manager
+    hostname: resource-manager
+    ports:
+      - 8088:8088
+    volumes:
+      - /tmp:/tmp
+    networks:
+      - bridge
+
+  datanode01:
+    <<: *datanode_base
+    container_name: datanode01
+    hostname: datanode01
+    volumes:
+      - datanode01:/opt/hadoop/dfs/data
+  
+  datanode02:
+    <<: *datanode_base
+    container_name: datanode02
+    hostname: datanode02
+    volumes:
+      - datanode02:/opt/hadoop/dfs/data
+
+  datanode03:
+    <<: *datanode_base
+    container_name: datanode03
+    hostname: datanode03
+    volumes:
+      - datanode03:/opt/hadoop/dfs/data
+  
+  yarn-timeline-server:
+    image: yarn-timeline-server:3.3.0
+    container_name: yarn-timeline-server
+    hostname: yarn-timeline-server
+    ports:
+      - 8188:8188
+    volumes:
+      - namenode:/opt/hadoop/yarn/timeline
+
+volumes:
+  namenode:
+  datanode01:
+  datanode02:
+  datanode03:
+
+networks:
+  bridge:
