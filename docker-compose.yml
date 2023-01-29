@@ -63,6 +63,58 @@ services:
       - 8188:8188
     volumes:
       - namenode:/opt/hadoop/yarn/timeline
+    networks:
+      - bridge
+
+  hive-metastore-mysql:
+    image: mysql:8
+    container_name: hive-metastore-mysql
+    hostname: hive-metastore-mysql
+    command: --default-authentication-plugin=mysql_native_password --lower-case-table-names=1
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: hive
+    ports:
+      - "3306:3306"
+    networks:
+      - bridge
+
+  hive-server:
+    image: hive-image:3.1.2
+    container_name: hive-server
+    hostname: hive-server
+    depends_on:
+      - resource-manager
+      - yarn-timeline-server
+      - hive-metastore
+    volumes:
+      - ./dummy_data:/opt/dummy_data
+    env_file:
+      - hive.env
+    environment:
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+    networks:
+      - bridge
+
+  hive-metastore:
+    image: hive-image:3.1.2
+    container_name: hive-metastore
+    hostname: hive-metastore
+    depends_on:
+      - hive-metastore-mysql
+    env_file:
+      - hive.env
+    command: [ "startup.sh", "metastore" ]
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 datanode01:9864 datanode02:9864 datanode03:9864 hive-metastore-mysql:3306"
+    ports:
+      - "9083:9083"
+    networks:
+      - bridge
 
 volumes:
   namenode:
