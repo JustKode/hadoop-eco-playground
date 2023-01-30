@@ -1,4 +1,4 @@
-FROM hadoop-base-image:3.3.0
+FROM spark-base-image:3.3.1
 
 # NameNode Web UI 응답 여부를 통해 Healthcheck
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:9870/ || exit 1

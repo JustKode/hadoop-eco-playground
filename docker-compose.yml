@@ -18,6 +18,7 @@ services:
       - 9000:9000
     volumes:
       - namenode:/opt/hadoop/dfs/name
+      - namenode:/opt/spark/eventLog
       - namenode:/opt/hadoop/yarn/timeline
       - /tmp:/tmp
     networks:
@@ -80,6 +81,8 @@ services:
       - "3306:3306"
     networks:
       - bridge
+    volumes:
+      - metastore:/var/lib/mysql
 
   hive-server:
     image: hive-image:3.1.2
@@ -115,12 +118,39 @@ services:
       - "9083:9083"
     networks:
       - bridge
+  
+  spark-history-server:
+    image: spark-history-server:3.3.1
+    container_name: spark-history-server
+    hostname: spark-history-server
+    ports:
+      - "9093:18080"
+    depends_on:
+      - namenode
+      - resource-manager
+    volumes:
+      - namenode:/opt/spark/eventLog
+    networks:
+      - bridge
+  
+  zeppelin:
+    image: zeppelin:0.10.1
+    container_name: zeppelin
+    hostname: zeppelin
+    ports:
+      - "9097:8080"
+    networks:
+      - bridge
+    volumes:
+      - namenode:/opt/spark/eventLog
+      - ./notebook:/zeppelin-0.10.1-bin-all/notebook
 
 volumes:
   namenode:
   datanode01:
   datanode02:
   datanode03:
+  metastore:
 
 networks:
   bridge:
