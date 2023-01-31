@@ -1,8 +1,8 @@
 FROM hadoop-base-image:3.3.0
 
-ENV SPARK_VERSION=3.2.2
-ENV SPARK_FILE_NAME=spark-3.3.1-bin-hadoop3
-ENV SPARK_URL=https://archive.apache.org/dist/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz
+ENV SPARK_VERSION=3.1.1
+ENV SPARK_FILE_NAME=spark-3.1.1-bin-hadoop3.2
+ENV SPARK_URL=https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz
 
 RUN apt-get update && apt-get install -y wget
 RUN wget $SPARK_URL
